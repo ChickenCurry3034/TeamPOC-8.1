@@ -68,9 +68,9 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
     private static final String[] LABELS = {
             // Aarush - please insert the Reapr Teachable Machine classes here
-            "Red",
-            "Green",
-            "Blue"
+            "0 Red",
+            "1 Green",
+            "2 Blue"
     };
 
     /*
