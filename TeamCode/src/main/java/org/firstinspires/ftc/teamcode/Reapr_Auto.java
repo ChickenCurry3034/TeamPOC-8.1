@@ -1,4 +1,3 @@
-package org.firstinspires.ftc.robotcontroller.external.samples;
 package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -9,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-/**
+/*
  * This file illustrates the concept of driving a path based on encoder counts.
  * It uses the common Pushbot hardware class to define the drive on the robot.
  * The code is structured as a LinearOpMode
@@ -47,7 +46,7 @@ public class Reapr_Auto extends LinearOpMode {
     /* Declare OpMode members. */
     private ElapsedTime     runtime = new ElapsedTime();
 
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 840 ;    // eg: TETRIX Motor Encoder
     static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -69,7 +68,7 @@ public class Reapr_Auto extends LinearOpMode {
         // Reverse left motors if you are using NeveRests
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);  // This was connected on the expansion hub, it needs to be reversed
+        //motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);  // This was connected on the expansion hub, it needs to be reversed
 
 
         // Send telemetry message to signify robot waiting;
@@ -95,10 +94,16 @@ public class Reapr_Auto extends LinearOpMode {
  
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        encoderDrive(DRIVE_SPEED,  48,  48, 48, 48, 200.0);  // 200 second timeout, no need for it yet
-        encoderDrive(TURN_SPEED, 48, -48, 48, -48, 200.0);
-        //encoderDrive(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        //encoderDrive(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
+        
+        // Forward
+        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);  // 200 second timeout, no need for it yet
+        // Strafing Left (but for right because its backwards)
+        encoderDrive(DRIVE_SPEED,  20,  -20, -20, 20, 200.0);  // 200 second timeout, no need for it yet
+        // Forward Again
+        encoderDrive(DRIVE_SPEED,  -8,  -8, -8, -8, 200.0);  // 200 second timeout, no need for it yet
+
+        // Rotate
+        //encoderDrive(TURN_SPEED, 24, -24, 24, -24, 200.0);
 
         // Add manual servo code with 
         telemetry.addData("Path", "Complete");
@@ -131,7 +136,7 @@ public class Reapr_Auto extends LinearOpMode {
         // Reverse left motors if you are using NeveRests
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);  // This was connected on the expansion hub, it needs to be reversed
+        //motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);  // This was connected on the expansion hub, it needs to be reversed
 
 
         // Ensure that the opmode is still active
