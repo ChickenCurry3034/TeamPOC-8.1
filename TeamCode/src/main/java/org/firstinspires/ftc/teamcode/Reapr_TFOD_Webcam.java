@@ -62,15 +62,15 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
      * Here we assume it's an Asset.    Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "Reapr_model_unquant.tflite"; 
+    private static final String TFOD_MODEL_ASSET = "model_unquant.tflite";
     // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
 
     private static final String[] LABELS = {
             // Aarush - please insert the Reapr Teachable Machine classes here
-            "Red",
-            "Green",
-            "Blue"
+            "0 Red",
+            "1 Green",
+            "2 Blue"
     };
 
     /*
@@ -130,7 +130,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) {
+                if (tfod != null) { //DETECTS LOCATION OF CUSTOM BEACON RATHER THAN WHAT SIGNAL IT IS GIVING
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
