@@ -130,7 +130,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) {
+                if (tfod != null) { //DETECTS LOCATION OF CUSTOM BEACON RATHER THAN WHAT SIGNAL IT IS GIVING
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
