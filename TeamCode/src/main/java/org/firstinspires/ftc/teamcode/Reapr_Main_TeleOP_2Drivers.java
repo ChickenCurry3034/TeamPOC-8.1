@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp(name = "Reapr Main TeleOP with 2 Drivers")
+@TeleOp(name = "Reapr Main 2 Driver TeleOP")
 
 public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
     @Override
@@ -110,14 +110,14 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
             // Elevator Controls
 
 
-            while (gamepad1.a){ // Move down
+            while (gamepad2.a){ // Move down
                 elevatorMotorLeft.setPower(0.5);
                 elevatorMotorRight.setPower(-0.5);
             }
             elevatorMotorLeft.setPower(0);
             elevatorMotorRight.setPower(0);
 
-            while (gamepad1.y){ // Move up
+            while (gamepad2.y){ // Move up
                 elevatorMotorLeft.setPower(-0.7);
                 elevatorMotorRight.setPower(0.7);
             }
