@@ -22,10 +22,10 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
         // Make sure your ID's match your configuration
 
         // Meccanum Drivetrain
-        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft"); // Port 0
+        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft"); // Port 1
+        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight"); // Port 2
+        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight"); // Port 3
 
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
@@ -124,11 +124,7 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
             elevatorMotorLeft.setPower(0);
             elevatorMotorRight.setPower(0);
             
-            
-
-
-
-
+        
         }
     }
 

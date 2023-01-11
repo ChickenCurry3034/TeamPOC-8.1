@@ -22,10 +22,10 @@ public class Reapr_Main_TeleOP extends LinearOpMode {
         // Make sure your ID's match your configuration
 
         // Meccanum Drivetrain
-        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
-        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
-        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
-        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft"); // Port 0
+        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft"); // Port 1
+        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight"); // Port 2
+        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight"); // Port 3
 
         // Reverse the right side motors
         // Reverse left motors if you are using NeveRests
@@ -42,6 +42,7 @@ public class Reapr_Main_TeleOP extends LinearOpMode {
 
         // Claw Motors (Servo)
         Servo claw = hardwareMap.servo.get("reaprClaw");// name of server on control hub is reaprClaw
+        // On port: 
         double clawPosition = 0.0;
         final double clawSpeed = 0.05;// change to 100th when button is hold
         final double clawMinRange = 0.0;
@@ -66,7 +67,7 @@ public class Reapr_Main_TeleOP extends LinearOpMode {
             if(gamepad1.left_stick_button){
                 if(isSlowMode){
                     isSlowMode=false;
-                    sleep(500);
+                    sleep(500); 
                 }else{
                     isSlowMode=true;
                     sleep(500);
