@@ -51,9 +51,10 @@ import java.util.List;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@TeleOp(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
-@Disabled
+@TeleOp(name = "TensorFlow Object Detection")
+
 public class Reapr_TFOD_Webcam extends LinearOpMode {
+
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -93,6 +94,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
+    
 
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
@@ -160,6 +162,8 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
     /**
      * Initialize the Vuforia localization engine.
      */
+
+    
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -172,6 +176,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
+
 
     /**
      * Initialize the TensorFlow Object Detection engine.
@@ -189,5 +194,8 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
+
     }
+    
+    
 }
