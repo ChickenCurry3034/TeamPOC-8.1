@@ -16,6 +16,9 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name = "Reapr Main 2 Driver TeleOP")
 
 public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
+
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -47,8 +50,12 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
         final double clawMinRange = 0.0;
         final double clawMaxRange = 0.55;
 
-
+        //Reapr Start Multi-Thread
+        Thread driveThread = new DriveThread();
+        Logging.log("Loading...");
         waitForStart();
+        Logging.log("Started!");
+        driveThread.start();
 
         if (isStopRequested()) return;
 
@@ -125,8 +132,35 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
             elevatorMotorRight.setPower(0);
             
         
-        }
+        }//end while loop for opModeIsActive()
+
+        driveThread.interrupt();
+        Logging.log("Complete!");
     }
 
+    private class DriveThread extends Thread{
+
+
+        //defining constructor
+        public DriveThread() {
+            this.setName("DriveThread");
+        }
+
+            @Override
+            public void run(){
+                Logging.log("Starting thread %s", this.getName());
+                try{ //try catch
+                    // all logic from opModeIsActive() to be pasted here
+                    while (!isInterrupted()){
+
+                    }
+
+
+                }
+                catch (InterruptedException e) {Logging.log("%s intrerupted", this.getName());}
+        }
+
+
+    } //end of drivethread class
 
 }
