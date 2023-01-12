@@ -52,9 +52,9 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
 
         //Reapr Start Multi-Thread
         Thread driveThread = new DriveThread();
-        Logging.log("Loading...");
+        //Logging.log("Loading...");
         waitForStart();
-        Logging.log("Started!");
+        //Logging.log("Started!");
         driveThread.start();
 
         if (isStopRequested()) return;
@@ -62,81 +62,12 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
         boolean isSlowMode = false;
         double dividePower=1.0;
 
-        while (opModeIsActive()) {
-
-            // Control Speed
-            if(isSlowMode){
-                dividePower=1.5;
-            }else{
-                dividePower=1.0;
-            }
-
-            if(gamepad1.left_stick_button){
-                if(isSlowMode){
-                    isSlowMode=false;
-                    sleep(500);
-                }else{
-                    isSlowMode=true;
-                    sleep(500);
-                }
-            }
-        
-            // Mecccanum controls
-            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio, but only when
-            // at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator / dividePower; //Positive rotation results in forward & right motion
-            double backLeftPower = (y - x + rx) / denominator / dividePower; //Positive rotation results in forward & left motion
-            double frontRightPower = (y - x - rx) / denominator / dividePower; //Positive rotation results in forward & left motion
-            double backRightPower = (y + x - rx) / denominator / dividePower; //Positive rotation results in forward & right motion
-
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
-
-            
-            // Servo Controls
-
-            if (gamepad2.b) // Down
-                clawPosition += clawSpeed;
-            else if (gamepad2.x) // Up
-                clawPosition -= clawSpeed;
-
-            clawPosition = Range.clip(clawPosition, clawMinRange, clawMaxRange);
-            claw.setPosition(clawPosition);
-
-            telemetry.addData("claw", "%.2f", clawPosition); //displays the values on the driver hub
-            telemetry.update();
-
-
-            // Elevator Controls
-
-
-            while (gamepad2.a){ // Move down
-                elevatorMotorLeft.setPower(0.5);
-                elevatorMotorRight.setPower(-0.5);
-            }
-            elevatorMotorLeft.setPower(0);
-            elevatorMotorRight.setPower(0);
-
-            while (gamepad2.y){ // Move up
-                elevatorMotorLeft.setPower(-0.7);
-                elevatorMotorRight.setPower(0.7);
-            }
-            elevatorMotorLeft.setPower(0);
-            elevatorMotorRight.setPower(0);
-            
-        
-        }//end while loop for opModeIsActive()
+        while (opModeIsActive()) { //end while loop for opModeIsActive()
+        idle();
+        }
 
         driveThread.interrupt();
-        Logging.log("Complete!");
+        //Logging.log("Complete!");
     }
 
     private class DriveThread extends Thread{
@@ -149,15 +80,82 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
 
             @Override
             public void run(){
-                Logging.log("Starting thread %s", this.getName());
+                //Logging.log("Starting thread %s", this.getName());
                 try{ //try catch
                     // all logic from opModeIsActive() to be pasted here
                     while (!isInterrupted()){
 
 
+                            // Control Speed
+                            if(isSlowMode){
+                                dividePower=1.5;
+                            }
+                            else{
+                                dividePower=1.0;
+                            }
+
+                            if(gamepad1.left_stick_button){
+                                if(isSlowMode){
+                                    isSlowMode=false;
+                                    sleep(500);
+                                }else{
+                                    isSlowMode=true;
+                                    sleep(500);
+                                }
+                            }
+
+                            // Mecccanum controls
+                            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+                            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+                            double rx = gamepad1.right_stick_x;
+
+                            // Denominator is the largest motor power (absolute value) or 1
+                            // This ensures all the powers maintain the same ratio, but only when
+                            // at least one is out of the range [-1, 1]
+                            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                            double frontLeftPower = (y + x + rx) / denominator / dividePower; //Positive rotation results in forward & right motion
+                            double backLeftPower = (y - x + rx) / denominator / dividePower; //Positive rotation results in forward & left motion
+                            double frontRightPower = (y - x - rx) / denominator / dividePower; //Positive rotation results in forward & left motion
+                            double backRightPower = (y + x - rx) / denominator / dividePower; //Positive rotation results in forward & right motion
+
+                            motorFrontLeft.setPower(frontLeftPower);
+                            motorBackLeft.setPower(backLeftPower);
+                            motorFrontRight.setPower(frontRightPower);
+                            motorBackRight.setPower(backRightPower);
 
 
-                    }
+                            // Servo Controls
+
+                            if (gamepad2.b) // Down
+                                clawPosition += clawSpeed;
+                            else if (gamepad2.x) // Up
+                                clawPosition -= clawSpeed;
+
+                            clawPosition = Range.clip(clawPosition, clawMinRange, clawMaxRange);
+                            claw.setPosition(clawPosition);
+
+                            telemetry.addData("claw", "%.2f", clawPosition); //displays the values on the driver hub
+                            telemetry.update();
+
+
+                            // Elevator Controls
+
+
+                            while (gamepad2.a){ // Move down
+                                elevatorMotorLeft.setPower(0.5);
+                                elevatorMotorRight.setPower(-0.5);
+                            }
+                            elevatorMotorLeft.setPower(0);
+                            elevatorMotorRight.setPower(0);
+
+                            while (gamepad2.y){ // Move up
+                                elevatorMotorLeft.setPower(-0.7);
+                                elevatorMotorRight.setPower(0.7);
+                            }
+                            elevatorMotorLeft.setPower(0);
+                            elevatorMotorRight.setPower(0);
+
+                        }
 
 
 
