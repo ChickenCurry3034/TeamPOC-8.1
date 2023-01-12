@@ -63,6 +63,7 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
         double dividePower=1.0;
 
         while (opModeIsActive()) {
+
             // Control Speed
             if(isSlowMode){
                 dividePower=1.5;
@@ -153,7 +154,12 @@ public class Reapr_Main_TeleOP_2Drivers extends LinearOpMode {
                     // all logic from opModeIsActive() to be pasted here
                     while (!isInterrupted()){
 
+
+
+
                     }
+
+
 
 
                 }
