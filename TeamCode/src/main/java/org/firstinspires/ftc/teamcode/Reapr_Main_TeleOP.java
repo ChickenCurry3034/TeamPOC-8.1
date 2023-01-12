@@ -111,17 +111,19 @@ public class Reapr_Main_TeleOP extends LinearOpMode {
             // Elevator Controls
 
 
-            while (gamepad1.a){ // Move down
+            if (gamepad1.a){ // Move down
                 elevatorMotorLeft.setPower(0.5);
                 elevatorMotorRight.setPower(-0.5);
             }
             elevatorMotorLeft.setPower(0);
             elevatorMotorRight.setPower(0);
 
-            while (gamepad1.y){ // Move up
+            if (gamepad1.y){ // Move up
                 elevatorMotorLeft.setPower(-0.7);
                 elevatorMotorRight.setPower(0.7);
             }
+
+
             elevatorMotorLeft.setPower(0);
             elevatorMotorRight.setPower(0);
             
