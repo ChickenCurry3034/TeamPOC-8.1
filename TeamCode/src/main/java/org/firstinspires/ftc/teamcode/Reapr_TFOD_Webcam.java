@@ -70,7 +70,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * Here we assume it's an Asset. Also see method initTfod() below .
      */
     // private static final String TFOD_MODEL_ASSET = "model_unquant.tflite";
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/model_unquant.tflite";
 
     private static final String[] LABELS = {
             // Aarush - please insert the Reapr Teachable Machine classes here
