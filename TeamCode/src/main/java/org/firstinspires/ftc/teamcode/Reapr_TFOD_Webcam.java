@@ -42,30 +42,35 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import java.util.List;
 
 /**
- * This 2022-2023 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * This 2022-2023 OpMode illustrates the basics of using the TensorFlow Object
+ * Detection API to
  * determine which image is being presented to the robot.
  *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
+ * Use Android Studio to Copy this Class, and Paste it into your team's code
+ * folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver
+ * Station OpMode list.
  *
- * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia
+ * license key as
  * is explained below.
  */
 @TeleOp(name = "TensorFlow Object Detection")
 
 public class Reapr_TFOD_Webcam extends LinearOpMode {
 
-
     /*
      * Specify the source for the Tensor Flow Model.
-     * If the TensorFlowLite object model is included in the Robot Controller App as an "asset",
-     * the OpMode must to load it using loadModelFromAsset().  However, if a team generated model
-     * has been downloaded to the Robot Controller's SD FLASH memory, it must to be loaded using loadModelFromFile()
-     * Here we assume it's an Asset.    Also see method initTfod() below .
+     * If the TensorFlowLite object model is included in the Robot Controller App as
+     * an "asset",
+     * the OpMode must to load it using loadModelFromAsset(). However, if a team
+     * generated model
+     * has been downloaded to the Robot Controller's SD FLASH memory, it must to be
+     * loaded using loadModelFromFile()
+     * Here we assume it's an Asset. Also see method initTfod() below .
      */
-    private static final String TFOD_MODEL_ASSET = "model_unquant.tflite";
-    // private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
-
+    // private static final String TFOD_MODEL_ASSET = "model_unquant.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
 
     private static final String[] LABELS = {
             // Aarush - please insert the Reapr Teachable Machine classes here
@@ -75,54 +80,65 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
     };
 
     /*
-     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string
+     * below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and
+     * will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the
+     * Vuforia developer
      * web site at https://developer.vuforia.com/license-manager.
      *
-     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * Vuforia license keys are always 380 characters long, and look as if they
+     * contain mostly
      * random data. As an example, here is a example of a fragment of a valid key:
-     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
      * Once you've obtained a license key, copy the string from the Vuforia web site
      * and paste it in to your code on the next line, between the double quotes.
      */
-    private static final String VUFORIA_KEY =
-            "AcJWPiP/////AAABmRv0x6fBjk9rr2cVNe/65PMBQNZEE0OHUmJE6gJQfJrlvCAt/5rKCJ/7Sz9zJxCm+GXOmSArVpbJfrEOkQF9nRfrq3rkh8xHnSKc4tIl2KT7x9s2ev8d8S/mzJ+1NjqV7CBPVS7dFUqzcTgoqnuZgUJG/pzAFgCBJdkQdUDUMy8/qOdWuz8B8GthAKc5cmSFyBvvwk7y4Edmv/pqIwLiwP+M2H/13o/jySsQu6OctKGUSUMpvwX0Zd6BrmeaA9EVzAyWoURqzPkwQN1PBSUQVujQ6s1KZEDhhWs6EDzrcL66P35+7GVNSWEJYFTzdxeOjFNyv/tl5SoaKK0my47Fxid2Ta0Lm/OZx991/+kUBBga";
+    private static final String VUFORIA_KEY = "AcJWPiP/////AAABmRv0x6fBjk9rr2cVNe/65PMBQNZEE0OHUmJE6gJQfJrlvCAt/5rKCJ/7Sz9zJxCm+GXOmSArVpbJfrEOkQF9nRfrq3rkh8xHnSKc4tIl2KT7x9s2ev8d8S/mzJ+1NjqV7CBPVS7dFUqzcTgoqnuZgUJG/pzAFgCBJdkQdUDUMy8/qOdWuz8B8GthAKc5cmSFyBvvwk7y4Edmv/pqIwLiwP+M2H/13o/jySsQu6OctKGUSUMpvwX0Zd6BrmeaA9EVzAyWoURqzPkwQN1PBSUQVujQ6s1KZEDhhWs6EDzrcL66P35+7GVNSWEJYFTzdxeOjFNyv/tl5SoaKK0my47Fxid2Ta0Lm/OZx991/+kUBBga";
 
     /**
-     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * {@link #vuforia} is the variable we will use to store our instance of the
+     * Vuforia
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
-    
 
     /**
-     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
+     * {@link #tfod} is the variable we will use to store our instance of the
+     * TensorFlow Object
      * Detection engine.
      */
     private TFObjectDetector tfod;
 
     @Override
     public void runOpMode() {
-        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we
+        // create that
         // first.
         initVuforia();
         initTfod();
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
-         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+         * Do it here so that the Camera Stream window will have the TensorFlow
+         * annotations visible.
          **/
         if (tfod != null) {
             tfod.activate();
 
-            // The TensorFlow software will scale the input images from the camera to a lower resolution.
-            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-            // If your target is at distance greater than 50 cm (20") you can increase the magnification value
-            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // The TensorFlow software will scale the input images from the camera to a
+            // lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or
+            // 22").
+            // If your target is at distance greater than 50 cm (20") you can increase the
+            // magnification value
+            // to artificially zoom in to the center of image. For best results, the
+            // "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object
+            // Detection model
             // (typically 16/9).
-            tfod.setZoom(1.0, 16.0/9.0);
+            tfod.setZoom(1.0, 16.0 / 9.0);
         }
 
         /** Wait for the game to begin */
@@ -132,25 +148,28 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) { //DETECTS LOCATION OF CUSTOM BEACON RATHER THAN WHAT SIGNAL IT IS GIVING
-                    // getUpdatedRecognitions() will return null if no new information is available since
+                if (tfod != null) { // DETECTS LOCATION OF CUSTOM BEACON RATHER THAN WHAT SIGNAL IT IS GIVING
+                    // getUpdatedRecognitions() will return null if no new information is available
+                    // since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
-                        // step through the list of recognitions and display image position/size information for each one
+                        // step through the list of recognitions and display image position/size
+                        // information for each one
                         // Note: "Image number" refers to the randomized image orientation/number
                         for (Recognition recognition : updatedRecognitions) {
-                            double col = (recognition.getLeft() + recognition.getRight()) / 2 ;
-                            double row = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-                            double width  = Math.abs(recognition.getRight() - recognition.getLeft()) ;
-                            double height = Math.abs(recognition.getTop()  - recognition.getBottom()) ;
+                            double col = (recognition.getLeft() + recognition.getRight()) / 2;
+                            double row = (recognition.getTop() + recognition.getBottom()) / 2;
+                            double width = Math.abs(recognition.getRight() - recognition.getLeft());
+                            double height = Math.abs(recognition.getTop() - recognition.getBottom());
 
-                            telemetry.addData(""," ");
-                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
-                            telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
-                            telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+                            telemetry.addData("", " ");
+                            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(),
+                                    recognition.getConfidence() * 100);
+                            telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+                            telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
                         }
                         telemetry.update();
                     }
@@ -163,39 +182,52 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * Initialize the Vuforia localization engine.
      */
 
-    
     private void initVuforia() {
         /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         * Configure Vuforia by creating a Parameter object, and passing it to the
+         * Vuforia engine.
          */
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1"); //Has to be the hardware maped Reapr webcam
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1"); // Has to be the hardware maped Reapr
+                                                                               // webcam
 
-        //  Instantiate the Vuforia engine
+        // Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
-
 
     /**
      * Initialize the TensorFlow Object Detection engine.
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfodParameters.minResultConfidence = 0.75f;
         tfodParameters.isModelTensorFlow2 = true;
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android
+        // Studio
+        // Use loadModelFromFile() if you have downloaded a custom team model to the
+        // Robot Controller's FLASH.
+        // tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
 
+        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == "0 Red") {
+            // go forward go left
+        }
+
+        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == "1 Green") {
+            // go forward
+        }
+
+        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == "2 Blue") {
+            // go forward go right
+        }
+
     }
-    
-    
+
 }
