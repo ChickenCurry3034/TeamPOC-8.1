@@ -225,14 +225,20 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
             // go forward go left
+            telemetry.addData("Red Detected");
+            telemetry.update();
         }
 
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Green) {
             // go forward
+            telemetry.addData("Green Detected");
+            telemetry.update();
         }
 
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Blue) {
             // go forward go right
+            telemetry.addData("Blue Detected");
+            telemetry.update();
         }
 
     }
