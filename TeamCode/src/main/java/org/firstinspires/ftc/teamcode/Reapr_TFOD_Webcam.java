@@ -216,9 +216,9 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         // tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         // tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
 
-        String Red = "0 Red"
-        String Green = "1 Green"
-        String Blue = "2 Blue"
+        String Red = "0 Red";
+        String Green = "1 Green";
+        String Blue = "2 Blue";
 
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
             // go forward go left
