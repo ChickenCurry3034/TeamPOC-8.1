@@ -56,10 +56,12 @@ public class Reapr_TeleOP2D extends LinearOpMode{
         // Create Thread Instance
 
         Thread reaprThread = new DriveThread();
+        Thread reaprThread2 = new DriveThread2();
 
         waitForStart();
 
         reaprThread.start();
+        reaprThread2.start();
 
         //if (isStopRequested()) return;
 
@@ -75,6 +77,7 @@ public class Reapr_TeleOP2D extends LinearOpMode{
 
         // Stop Driving Thread
         reaprThread.interrupt();
+        reaprThread2.interrupt();
 
     }// End runOpMode
 
@@ -136,7 +139,7 @@ public class Reapr_TeleOP2D extends LinearOpMode{
                     motorBackRight.setPower(backRightPower);
 
                     // Servo Controls
-
+                    /*
                     if (gamepad2.b) // Down
                         clawPosition += clawSpeed;
                     else if (gamepad2.x) // Up
@@ -162,7 +165,7 @@ public class Reapr_TeleOP2D extends LinearOpMode{
 
                     elevatorMotorLeft.setPower(0);
                     elevatorMotorRight.setPower(0);
-
+                        */
                 }
 
             }
@@ -170,6 +173,76 @@ public class Reapr_TeleOP2D extends LinearOpMode{
         }
     }
 
-    // End Thread Class
+    // End Thread Class 1
+    public class DriveThread2 extends Thread {
+        //initial constructor
+        public DriveThread2() {
+            this.setName("DriveThread2");
+        }
+        @Override
+        public void run() {
+            // All Logic to execute motors and claws in parallel goes here
+            boolean isSlowMode = false;
+            double dividePower=1.0;
+
+            try {
+
+                while (!isInterrupted()){
+
+                    // Control Speed
+                    if(isSlowMode){
+                        dividePower=1.5;
+                    }else{
+                        dividePower=1.0;
+                    }
+
+                    if(gamepad1.left_stick_button){
+                        if(isSlowMode){
+                            isSlowMode=false;
+                            sleep(500);
+                        }else{
+                            isSlowMode=true;
+                            sleep(500);
+                        }
+                    }
+
+
+
+
+                    // Servo Controls
+
+                    if (gamepad1.b) // Down
+                        clawPosition += clawSpeed;
+                    else if (gamepad1.x) // Up
+                        clawPosition -= clawSpeed;
+
+                    clawPosition = Range.clip(clawPosition, clawMinRange, clawMaxRange);
+                    claw.setPosition(clawPosition);
+
+                    telemetry.addData("claw", "%.2f", clawPosition); //displays the values on the driver hub
+                    telemetry.update();
+
+                    if (gamepad2.a){ // Move down
+                        elevatorMotorLeft.setPower(0.5);
+                        elevatorMotorRight.setPower(-0.5);
+                    }
+                    elevatorMotorLeft.setPower(0);
+                    elevatorMotorRight.setPower(0);
+
+                    if (gamepad2.y){ // Move up
+                        elevatorMotorLeft.setPower(-0.7);
+                        elevatorMotorRight.setPower(0.7);
+                    }
+
+                    elevatorMotorLeft.setPower(0);
+                    elevatorMotorRight.setPower(0);
+
+                }
+
+            }
+            catch (InterruptedException e){}
+        }
+
+    }
 
 }// End Master Class

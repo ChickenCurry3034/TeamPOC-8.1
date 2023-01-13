@@ -69,8 +69,8 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * loaded using loadModelFromFile()
      * Here we assume it's an Asset. Also see method initTfod() below .
      */
-    //private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/model_unquant.tflite";
-     private static final String TFOD_MODEL_FILE  = "/sdcard/FIRST/tflitemodels/CustomTeamModel.tflite";
+
+     private static final String TFOD_MODEL_FILE = "model_unquant.tflite";
 
 
     private static final String[] LABELS = {
@@ -226,7 +226,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
             // go forward go left
-            telemetry.addData("Red Detected");
+            telemetry.addData("Red Dectect"); //displays the values on the driver hub
             telemetry.update();
         }
 
