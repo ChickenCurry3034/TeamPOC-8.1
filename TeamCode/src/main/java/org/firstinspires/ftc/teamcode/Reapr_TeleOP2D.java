@@ -18,13 +18,19 @@ public class Reapr_TeleOP2D extends LinearOpMode{
     final double clawSpeed = 0.05;// change to 100th when button is hold
     final double clawMinRange = 0.0;
     final double clawMaxRange = 0.55;
+    boolean isSlowMode = false;
+    double dividePower=1.0;
 
-    public Reapr_TeleOP2D () throws Exception
-    {
+    boolean isParallelMode= true;
 
-    }
+    double frontLeftPower = 0.0;
+    double backLeftPower = 0.0;
+    double frontRightPower = 0.0;
+    double backRightPower = 0.0;
 
+   /*************************/
     // Hardware Map
+   /************************/
     public void ReaprHardware(){
 
         // Meccanum Drivetrain
@@ -45,23 +51,29 @@ public class Reapr_TeleOP2D extends LinearOpMode{
         // Claw Motors (Servo)
         Servo claw = hardwareMap.servo.get("reaprClaw");// name of server on control
 
-    }
+    } // End ; Call this in runOpMode
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-       ReaprHardware();
+        // Call Hardaware Map Function
+        ReaprHardware();
 
         // Create Thread Instance
+        Thread reaprThread = new ReaprDriveThread();
 
-        Thread reaprThread = new DriveThread();
-        Thread reaprThread2 = new DriveThread2();
 
+        telemetry.addData("Mode", "Waiting");
+        telemetry.update();
+
+        //Wait for Satrt to be Pressed
         waitForStart();
 
+
+        //Start Parallel Thread
         reaprThread.start();
-        reaprThread2.start();
+
 
         //if (isStopRequested()) return;
 
@@ -69,77 +81,99 @@ public class Reapr_TeleOP2D extends LinearOpMode{
         {
           while (opModeIsActive()) {
 
+
+              // Control Speed
+              if(isSlowMode){
+                  dividePower=1.5;
+              }else{
+                  dividePower=1.0;
+              }
+
+              if(gamepad1.left_stick_button){
+                  if(isSlowMode){
+                      isSlowMode=false;
+                      sleep(500);
+                  }else{
+                      isSlowMode=true;
+                      sleep(500);
+                  }
+              }
+
+              telemetry.addData("claw", "%.2f", clawPosition); //displays the values on the driver hub
+              telemetry.update();
+
+              /*******************************/
+              // Drive Wheels Movement
+              /*******************************/
+
+
+                  // Mecccanum controls
+                  double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+                  double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+                  double rx = gamepad1.right_stick_x;
+
+                  telemetry.addData("X: ", "%.2f", x);
+                  telemetry.addData("Y: ", "%.2f", y);
+                  telemetry.update();
+
+                  // Denominator is the largest motor power (absolute value) or 1
+                  // This ensures all the powers maintain the same ratio, but only when
+                  // at least one is out of the range [-1, 1]
+                  double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                  double frontLeftPower = (y + x + rx) / denominator / dividePower; //Positive rotation results in forward & right motion
+                  double backLeftPower = (y - x + rx) / denominator / dividePower; //Positive rotation results in forward & left motion
+                  double frontRightPower = (y - x - rx) / denominator / dividePower; //Positive rotation results in forward & left motion
+                  double backRightPower = (y + x - rx) / denominator / dividePower; //Positive rotation results in forward & right motion
+
+                  telemetry.addData("Moter Front Left Power: ", "%.2f", frontLeftPower);
+                  telemetry.addData("Moter Back Left Power: ", "%.2f", backLeftPower);
+                  telemetry.addData("Moter Front Right Power: ", "%.2f", frontRightPower);
+                  telemetry.addData("Moter Back Right Power: ", "%.2f", backRightPower);
+                  telemetry.update();
+
+
+
+                  motorFrontLeft.setPower(frontLeftPower); // Get Power from Thread
+                  motorBackLeft.setPower(backLeftPower); // Get Power from Thread
+                  motorFrontRight.setPower(frontRightPower); // Get Power from Thread
+                  motorBackRight.setPower(backRightPower); // Get Power from Thread
+
+
               idle();
 
-          }
+          } // end of opModeIsActive() while loop
+
         }
-        catch (Exception e) {}
+        catch (Exception e) {telemetry.addData("Reapr Opmode Fault :", "e");telemetry.update();}
 
         // Stop Driving Thread
         reaprThread.interrupt();
-        reaprThread2.interrupt();
+        isParallelMode = false;
 
     }// End runOpMode
 
 
     // Create a thread class
 
-    private class DriveThread extends Thread
+    private class ReaprDriveThread extends Thread
 
     {
 
-        public DriveThread() {
+        public ReaprDriveThread() {
             this.setName("DriveThread");
         }
 
         @Override
         public void run() {
-            // All Logic to execute motors and claws in parallel goes here
-            boolean isSlowMode = false;
-            double dividePower=1.0;
 
-            try {
+            while (!isInterrupted()){
 
-                while (!isInterrupted()){
-
-                    // Control Speed
-                    if(isSlowMode){
-                        dividePower=1.5;
-                    }else{
-                        dividePower=1.0;
-                    }
-
-                    if(gamepad1.left_stick_button){
-                        if(isSlowMode){
-                            isSlowMode=false;
-                            sleep(500);
-                        }else{
-                            isSlowMode=true;
-                            sleep(500);
-                        }
-                      }
-
-                    // Mecccanum controls
-                    double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-                    double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-                    double rx = gamepad1.right_stick_x;
-
-                    // Denominator is the largest motor power (absolute value) or 1
-                    // This ensures all the powers maintain the same ratio, but only when
-                    // at least one is out of the range [-1, 1]
-                    double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-                    double frontLeftPower = (y + x + rx) / denominator / dividePower; //Positive rotation results in forward & right motion
-                    double backLeftPower = (y - x + rx) / denominator / dividePower; //Positive rotation results in forward & left motion
-                    double frontRightPower = (y - x - rx) / denominator / dividePower; //Positive rotation results in forward & left motion
-                    double backRightPower = (y + x - rx) / denominator / dividePower; //Positive rotation results in forward & right motion
-
-                    motorFrontLeft.setPower(frontLeftPower);
-                    motorBackLeft.setPower(backLeftPower);
-                    motorFrontRight.setPower(frontRightPower);
-                    motorBackRight.setPower(backRightPower);
+                /********************************/
+                // Drive Claw
+                /********************************/
 
                     // Servo Controls
-                    /*
+
                     if (gamepad2.b) // Down
                         clawPosition += clawSpeed;
                     else if (gamepad2.x) // Up
@@ -148,101 +182,32 @@ public class Reapr_TeleOP2D extends LinearOpMode{
                     clawPosition = Range.clip(clawPosition, clawMinRange, clawMaxRange);
                     claw.setPosition(clawPosition);
 
-                    telemetry.addData("claw", "%.2f", clawPosition); //displays the values on the driver hub
-                    telemetry.update();
 
-                    if (gamepad1.a){ // Move down
+                /**************************************/
+                // Elevator Movement
+                /*************************************/
+
+
+                    if (gamepad2.a) { // Move down
                         elevatorMotorLeft.setPower(0.5);
                         elevatorMotorRight.setPower(-0.5);
                     }
                     elevatorMotorLeft.setPower(0);
                     elevatorMotorRight.setPower(0);
 
-                    if (gamepad1.y){ // Move up
+                    if (gamepad2.y) { // Move up
                         elevatorMotorLeft.setPower(-0.7);
                         elevatorMotorRight.setPower(0.7);
-                    }
+
 
                     elevatorMotorLeft.setPower(0);
                     elevatorMotorRight.setPower(0);
-                        */
                 }
+                /**************************************/
+               idle();
+            } // end while for is interupted
 
-            }
-            catch (InterruptedException e){}
         }
-    }
-
-    // End Thread Class 1
-    public class DriveThread2 extends Thread {
-        //initial constructor
-        public DriveThread2() {
-            this.setName("DriveThread2");
-        }
-        @Override
-        public void run() {
-            // All Logic to execute motors and claws in parallel goes here
-            boolean isSlowMode = false;
-            double dividePower=1.0;
-
-            try {
-
-                while (!isInterrupted()){
-
-                    // Control Speed
-                    if(isSlowMode){
-                        dividePower=1.5;
-                    }else{
-                        dividePower=1.0;
-                    }
-
-                    if(gamepad1.left_stick_button){
-                        if(isSlowMode){
-                            isSlowMode=false;
-                            sleep(500);
-                        }else{
-                            isSlowMode=true;
-                            sleep(500);
-                        }
-                    }
-
-
-
-
-                    // Servo Controls
-
-                    if (gamepad1.b) // Down
-                        clawPosition += clawSpeed;
-                    else if (gamepad1.x) // Up
-                        clawPosition -= clawSpeed;
-
-                    clawPosition = Range.clip(clawPosition, clawMinRange, clawMaxRange);
-                    claw.setPosition(clawPosition);
-
-                    telemetry.addData("claw", "%.2f", clawPosition); //displays the values on the driver hub
-                    telemetry.update();
-
-                    if (gamepad2.a){ // Move down
-                        elevatorMotorLeft.setPower(0.5);
-                        elevatorMotorRight.setPower(-0.5);
-                    }
-                    elevatorMotorLeft.setPower(0);
-                    elevatorMotorRight.setPower(0);
-
-                    if (gamepad2.y){ // Move up
-                        elevatorMotorLeft.setPower(-0.7);
-                        elevatorMotorRight.setPower(0.7);
-                    }
-
-                    elevatorMotorLeft.setPower(0);
-                    elevatorMotorRight.setPower(0);
-
-                }
-
-            }
-            catch (InterruptedException e){}
-        }
-
-    }
+    } // End Thread Class
 
 }// End Master Class
