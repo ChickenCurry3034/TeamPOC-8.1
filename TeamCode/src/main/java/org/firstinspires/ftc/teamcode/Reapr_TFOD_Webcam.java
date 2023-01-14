@@ -226,7 +226,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
             // go forward go left
-            telemetry.addData("Red Dectect"); //displays the values on the driver hub
+            telemetry.addData("Red Detected"); //displays the values on the driver hub
             telemetry.update();
         }
 
