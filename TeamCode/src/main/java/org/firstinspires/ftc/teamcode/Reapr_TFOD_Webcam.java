@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,6 +39,13 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 import java.util.List;
 
@@ -55,7 +63,7 @@ import java.util.List;
  * license key as
  * is explained below.
  */
-@TeleOp(name = "TensorFlow Object Detection")
+@Autonomous(name = "TensorFlow Object Detection")
 
 public class Reapr_TFOD_Webcam extends LinearOpMode {
 
@@ -70,8 +78,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * Here we assume it's an Asset. Also see method initTfod() below .
      */
 
-     private static final String TFOD_MODEL_FILE = "model_unquant.tflite";
-
+    private static final String TFOD_MODEL_FILE = "model_unquant.tflite";
 
     private static final String[] LABELS = {
             // Aarush - please insert the Reapr Teachable Machine classes here
@@ -110,6 +117,118 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * TensorFlow Object
      * Detection engine.
      */
+
+    /* Declare OpMode members. */
+    private ElapsedTime     runtime = new ElapsedTime();
+
+    static final double     COUNTS_PER_MOTOR_REV    = 840 ;    // eg: TETRIX Motor Encoder
+    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
+    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     DRIVE_SPEED             = 0.6;
+    static final double     TURN_SPEED              = 0.5;
+
+    /*************************/
+    // Hardware Map
+    /************************/
+
+    // On port:
+    double clawPosition = 0.0;
+    final double clawSpeed = 0.05;// change to 100th when button is hold
+    final double clawMinRange = 0.0;
+    final double clawMaxRange = 0.55;
+    boolean isSlowMode = false;
+    double dividePower=1.0;
+
+    boolean isParallelMode= true;
+
+    double frontLeftPower = 0.0;
+    double backLeftPower = 0.0;
+    double frontRightPower = 0.0;
+    double backRightPower = 0.0;
+
+    DcMotor motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight, elevatorMotorLeft, elevatorMotorRight;
+    Servo claw;
+
+    public void ReaprHardware(){
+
+        // Meccanum Drivetrain
+        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft"); // Port 0
+        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft"); // Port 1
+        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight"); // Port 2
+        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight"); // Port 3
+
+        // Reverse the right side motors
+        // Reverse left motors if you are using NeveRests
+        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Elevator Motors
+        DcMotor elevatorMotorLeft = hardwareMap.dcMotor.get("elevatorMotorLeft");
+        DcMotor elevatorMotorRight = hardwareMap.dcMotor.get("elevatorMotorRight");
+
+        // Claw Motors (Servo)
+        Servo claw = hardwareMap.servo.get("reaprClaw");// name of server on control
+
+    } // End ; Call this in runOpMode
+
+    public void red(){
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Forward
+        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Going left (functions are for going right because robot going BACKWARDS)
+        encoderDrive(DRIVE_SPEED,  16,  -16, -16, 16, 200.0);
+        // 200 second timeout, no need for it yet
+    } //Go forward 1.5 block then strafe left 1 block DICE 1/4
+
+    public void green(){
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Forward
+        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+    } //Go forward 1.5 block DICE 2/5
+
+    public void blue(){
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Forward
+        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Going right (functions are for going left because robot going BACKWARDS)
+        encoderDrive(DRIVE_SPEED,  -16,  16, 16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+    } //Go forward 1.5 block then strafe right 1 block DICE 3/6
+
     private TFObjectDetector tfod;
 
     @Override
@@ -117,8 +236,12 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we
         // create that
         // first.
+
         initVuforia();
         initTfod();
+        ReaprHardware();
+
+
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -147,60 +270,138 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        /*
-         * if (opModeIsActive()) {
-         * while (opModeIsActive()) {
-         * if (tfod != null) { // DETECTS LOCATION OF CUSTOM BEACON RATHER THAN WHAT
-         * SIGNAL IT IS GIVING
-         * // getUpdatedRecognitions() will return null if no new information is
-         * available
-         * // since
-         * // the last time that call was made.
-         * List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-         * if (updatedRecognitions != null) {
-         * telemetry.addData("# Objects Detected", updatedRecognitions.size());
-         * 
-         * // step through the list of recognitions and display image position/size
-         * // information for each one
-         * // Note: "Image number" refers to the randomized image orientation/number
-         * for (Recognition recognition : updatedRecognitions) {
-         * double col = (recognition.getLeft() + recognition.getRight()) / 2;
-         * double row = (recognition.getTop() + recognition.getBottom()) / 2;
-         * double width = Math.abs(recognition.getRight() - recognition.getLeft());
-         * double height = Math.abs(recognition.getTop() - recognition.getBottom());
-         * 
-         * telemetry.addData("", " ");
-         * telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(),
-         * recognition.getConfidence() * 100);
-         * telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-         * telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-         * }
-         * telemetry.update();
-         * }
-         * }
-         * }
-         * }
-         */}
 
-    /**
-     * Initialize the Vuforia localization engine.
-     */
+         if (opModeIsActive()) {
+             while (opModeIsActive()) {
+                 String SignalDetected = "";
+                 String Red = "0 Red";
+                 String Green = "1 Green";
+                 String Blue = "2 Blue";
+                 sleep(2000); //wait 2 seconds
+                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                 List<Recognition> recognitions = tfod.getRecognitions();
+                 for (Recognition recognition : updatedRecognitions) {
+                     SignalDetected = recognition.getLabel();
+                     if (SignalDetected == Red) {
+                         telemetry.addData("Got Label: ", "%s", Red);
+                         telemetry.update();
+                         red();
+                     }
+                     if (SignalDetected == Blue) {
+                         telemetry.addData("Got Label: ", "%s", Blue);
+                         telemetry.update();
+                         blue();
+                     }
+                     if (SignalDetected == Green) {
+                         telemetry.addData("Got Label: ", "%s", Green);
+                         telemetry.update();
+                         green();
+                     }
+                 }
 
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the
-         * Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+                 tfod.deactivate();
+             }
+         }
+    }//end of runOp() mode
+             /**
+              * Initialize the Vuforia localization engine.
+              */
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1"); // Has to be the hardware maped Reapr
-                                                                               // webcam
+         private void initVuforia () {
+             /*
+              * Configure Vuforia by creating a Parameter object, and passing it to the
+              * Vuforia engine.
+              */
+            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        // Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+            parameters.vuforiaLicenseKey = VUFORIA_KEY;
+            parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1"); // Has to be the hardware maped Reapr
+            // webcam
+
+            // Instantiate the Vuforia engine
+            vuforia = ClassFactory.getInstance().createVuforia(parameters);
+         }
+
+    public void encoderDrive(double speed, double leftInches, double rightInches, double leftBackInches, double rightBackInches, double timeoutS) {
+
+        int newLeftTarget;
+        int newRightTarget;
+        int newLeftBackTarget;
+        int newRightBackTarget;
+
+        // Meccanum Drivetrain
+        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
+        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
+        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
+        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+
+        // Reverse the right side motors
+        // Reverse left motors if you are using NeveRests
+        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);  // This was connected on the expansion hub, it needs to be reversed
+
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = motorFrontLeft.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newRightTarget = motorFrontRight.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newLeftBackTarget = motorBackLeft.getCurrentPosition() + (int)(leftBackInches * COUNTS_PER_INCH);
+            newRightBackTarget = motorBackRight.getCurrentPosition() + (int)(rightBackInches * COUNTS_PER_INCH);
+            motorFrontLeft.setTargetPosition(newLeftTarget);
+            motorFrontRight.setTargetPosition(newRightTarget);
+            motorBackLeft.setTargetPosition(newLeftBackTarget);
+            motorBackRight.setTargetPosition(newRightBackTarget);
+
+            // Turn On RUN_TO_POSITION
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            motorFrontLeft.setPower(Math.abs(speed));
+            motorFrontRight.setPower(Math.abs(speed));
+            motorBackLeft.setPower(Math.abs(speed));
+            motorBackRight.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (motorFrontLeft.isBusy() && motorFrontRight.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        motorFrontLeft.getCurrentPosition(),
+                        motorFrontRight.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            motorFrontLeft.setPower(0);
+            motorFrontRight.setPower(0);
+            motorBackLeft.setPower(0);
+            motorBackRight.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+        }
     }
-
     /**
      * Initialize the TensorFlow Object Detection engine.
      */
@@ -213,34 +414,15 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        //tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
+        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android
+        // Studio
+        // Use loadModelFromFile() if you have downloaded a custom team model to the
+        // Robot Controller's FLASH.
+        // tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
         tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
 
-        
 
-        String Red = "0 Red";
-        String Green = "1 Green";
-        String Blue = "2 Blue";
 
-        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
-            // go forward go left
-            telemetry.addData("Red Detected"); //displays the values on the driver hub
-            telemetry.update();
-        }
-
-        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Green) {
-            // go forward
-            telemetry.addData("Green Detected");
-            telemetry.update();
-        }
-
-        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Blue) {
-            // go forward go right
-            telemetry.addData("Blue Detected");
-            telemetry.update();
-        }
 
     }
 
