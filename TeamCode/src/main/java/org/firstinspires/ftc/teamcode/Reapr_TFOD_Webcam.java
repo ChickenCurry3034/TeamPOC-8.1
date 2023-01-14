@@ -161,6 +161,28 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
     } // End ; Call this in runOpMode
 
+    public void red(){
+        motorFrontLeft.setPower(1);
+        motorBackLeft.setPower(1);
+        motorFrontRight.setPower(1);
+        motorBackRight.setPower(1);
+
+        sleep(500);
+
+        motorFrontLeft.setPower(-1);
+        motorBackLeft.setPower(1);
+        motorFrontRight.setPower(1);
+        motorBackRight.setPower(-1);
+        sleep(500);
+    } //Go forward 1.5 block then strafe left 1 block DICE 1/4
+
+    public void green(){
+
+    } //Go forward 1.5 block DICE 2/5
+
+    public void blue(){
+
+    } //Go forward 1.5 block then strafe right 1 block DICE 3/6
 
     private TFObjectDetector tfod;
 
@@ -216,14 +238,17 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
                      if (SignalDetected == Red) {
                          telemetry.addData("Got Label: ", "%s", Red);
                          telemetry.update();
+                         red();
                      }
                      if (SignalDetected == Blue) {
                          telemetry.addData("Got Label: ", "%s", Blue);
                          telemetry.update();
+                         blue();
                      }
                      if (SignalDetected == Green) {
                          telemetry.addData("Got Label: ", "%s", Green);
                          telemetry.update();
+                         green();
                      }
                  }
 
