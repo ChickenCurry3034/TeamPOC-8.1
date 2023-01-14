@@ -70,8 +70,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      * Here we assume it's an Asset. Also see method initTfod() below .
      */
 
-     private static final String TFOD_MODEL_FILE = "model_unquant.tflite";
-
+    private static final String TFOD_MODEL_FILE = "model_unquant.tflite";
 
     private static final String[] LABELS = {
             // Aarush - please insert the Reapr Teachable Machine classes here
@@ -213,37 +212,39 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         tfodParameters.inputSize = 300;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
-        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android Studio
-        // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
-        //tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
+        // Use loadModelFromAsset() if the TF Model is built in as an asset by Android
+        // Studio
+        // Use loadModelFromFile() if you have downloaded a custom team model to the
+        // Robot Controller's FLASH.
+        // tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
         tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
-
-        
 
         String Red = "0 Red";
         String Green = "1 Green";
         String Blue = "2 Blue";
-        tfod.getRecognitions();
+        sleep(2000) //wait 2 seconds
+        Signal = tfod.getRecognitions();
+        tfod.deactivate();
 
-/*
-        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
-            // go forward go left
-            //telemetry.addData("Red Detected"); //displays the values on the driver hub
-           // telemetry.update();
-        }
-
-        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Green) {
-            // go forward
-            telemetry.addData("Green Detected");
-            telemetry.update();
-        }
-
-        if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Blue) {
-            // go forward go right
-            telemetry.addData("Blue Detected");
-            telemetry.update();
-        }
-*/
+        /*
+         * if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
+         * // go forward go left
+         * //telemetry.addData("Red Detected"); //displays the values on the driver hub
+         * // telemetry.update();
+         * }
+         * 
+         * if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Green) {
+         * // go forward
+         * telemetry.addData("Green Detected");
+         * telemetry.update();
+         * }
+         * 
+         * if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Blue) {
+         * // go forward go right
+         * telemetry.addData("Blue Detected");
+         * telemetry.update();
+         * }
+         */
     }
 
 }
