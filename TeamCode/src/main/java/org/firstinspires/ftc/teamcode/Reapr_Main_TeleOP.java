@@ -122,8 +122,6 @@ public class Reapr_Main_TeleOP extends LinearOpMode {
                 elevatorMotorLeft.setPower(-0.7);
                 elevatorMotorRight.setPower(0.7);
             }
-
-
             elevatorMotorLeft.setPower(0);
             elevatorMotorRight.setPower(0);
             
