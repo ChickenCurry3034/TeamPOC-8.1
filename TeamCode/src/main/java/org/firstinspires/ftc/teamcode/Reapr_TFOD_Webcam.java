@@ -223,11 +223,13 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         String Red = "0 Red";
         String Green = "1 Green";
         String Blue = "2 Blue";
+        tfod.getRecognitions();
 
+/*
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Red) {
             // go forward go left
-            telemetry.addData("Red Detected"); //displays the values on the driver hub
-            telemetry.update();
+            //telemetry.addData("Red Detected"); //displays the values on the driver hub
+           // telemetry.update();
         }
 
         if (tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS) == Green) {
@@ -241,7 +243,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
             telemetry.addData("Blue Detected");
             telemetry.update();
         }
-
+*/
     }
 
 }
