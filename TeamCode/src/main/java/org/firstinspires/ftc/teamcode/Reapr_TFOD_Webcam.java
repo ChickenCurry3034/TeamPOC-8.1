@@ -46,7 +46,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
 import java.util.List;
 
 /**
@@ -119,15 +118,15 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
      */
 
     /* Declare OpMode members. */
-    private ElapsedTime     runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();
 
-    static final double     COUNTS_PER_MOTOR_REV    = 840 ;    // eg: TETRIX Motor Encoder
-    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;     // This is < 1.0 if geared UP
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+    static final double COUNTS_PER_MOTOR_REV = 840; // eg: TETRIX Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = 2.0; // This is < 1.0 if geared UP
+    static final double WHEEL_DIAMETER_INCHES = 4.0; // For figuring circumference
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
+    static final double DRIVE_SPEED = 0.6;
+    static final double TURN_SPEED = 0.5;
 
     /*************************/
     // Hardware Map
@@ -139,9 +138,9 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
     final double clawMinRange = 0.0;
     final double clawMaxRange = 0.55;
     boolean isSlowMode = false;
-    double dividePower=1.0;
+    double dividePower = 1.0;
 
-    boolean isParallelMode= true;
+    boolean isParallelMode = true;
 
     double frontLeftPower = 0.0;
     double backLeftPower = 0.0;
@@ -151,7 +150,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
     DcMotor motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight, elevatorMotorLeft, elevatorMotorRight;
     Servo claw;
 
-    public void ReaprHardware(){
+    public void ReaprHardware() {
 
         // Meccanum Drivetrain
         DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft"); // Port 0
@@ -173,7 +172,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
 
     } // End ; Call this in runOpMode
 
-    public void red(){
+    public void red() {
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -181,7 +180,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Forward
-        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);
+        encoderDrive(DRIVE_SPEED, -16, -16, -16, -16, 200.0);
         // 200 second timeout, no need for it yet
 
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -191,11 +190,11 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Going left (functions are for going right because robot going BACKWARDS)
-        encoderDrive(DRIVE_SPEED,  16,  -16, -16, 16, 200.0);
+        encoderDrive(DRIVE_SPEED, 16, -16, -16, 16, 200.0);
         // 200 second timeout, no need for it yet
-    } //Go forward 1.5 block then strafe left 1 block DICE 1/4
+    } // Go forward 1.5 block then strafe left 1 block DICE 1/4
 
-    public void green(){
+    public void green() {
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -203,11 +202,11 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Forward
-        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);
+        encoderDrive(DRIVE_SPEED, -16, -16, -16, -16, 200.0);
         // 200 second timeout, no need for it yet
-    } //Go forward 1.5 block DICE 2/5
+    } // Go forward 1.5 block DICE 2/5
 
-    public void blue(){
+    public void blue() {
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -215,7 +214,7 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Forward
-        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);
+        encoderDrive(DRIVE_SPEED, -16, -16, -16, -16, 200.0);
         // 200 second timeout, no need for it yet
 
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -225,9 +224,9 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Going right (functions are for going left because robot going BACKWARDS)
-        encoderDrive(DRIVE_SPEED,  -16,  16, 16, -16, 200.0);
+        encoderDrive(DRIVE_SPEED, -16, 16, 16, -16, 200.0);
         // 200 second timeout, no need for it yet
-    } //Go forward 1.5 block then strafe right 1 block DICE 3/6
+    } // Go forward 1.5 block then strafe right 1 block DICE 3/6
 
     private TFObjectDetector tfod;
 
@@ -240,8 +239,6 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         initVuforia();
         initTfod();
         ReaprHardware();
-
-
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -270,59 +267,48 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                String SignalDetected = "";
+                String Red = "0 Red";
+                String Green = "1 Green";
+                String Blue = "2 Blue";
+                sleep(2000); // wait 2 seconds
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                List<Recognition> recognitions = tfod.getRecognitions();
+                for (Recognition recognition : recognitions) {
+                    SignalDetected = recognition.getLabel();
+                    if (SignalDetected == Red) {
+                        telemetry.addData("Got Label: ", "%s", Red);
+                        telemetry.update();
+                        red();
+                    }else if (SignalDetected == Blue) {
+                        telemetry.addData("Got Label: ", "%s", Blue);
+                        telemetry.update();
+                        blue();
+                    }else if (SignalDetected == Green) {
+                        telemetry.addData("Got Label: ", "%s", Green);
+                        telemetry.update();
+                        green();
+                    }else{
+                        telemetry.addData(">", "ITS ALL AARUSH's FAULT");
 
-         if (opModeIsActive()) {
-             while (opModeIsActive()) {
-                 String SignalDetected = "";
-                 String Red = "0 Red";
-                 String Green = "1 Green";
-                 String Blue = "2 Blue";
-                 sleep(2000); //wait 2 seconds
-                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                 List<Recognition> recognitions = tfod.getRecognitions();
-                 for (Recognition recognition : updatedRecognitions) {
-                     SignalDetected = recognition.getLabel();
-                     if (SignalDetected == Red) {
-                         telemetry.addData("Got Label: ", "%s", Red);
-                         telemetry.update();
-                         red();
-                     }
-                     if (SignalDetected == Blue) {
-                         telemetry.addData("Got Label: ", "%s", Blue);
-                         telemetry.update();
-                         blue();
-                     }
-                     if (SignalDetected == Green) {
-                         telemetry.addData("Got Label: ", "%s", Green);
-                         telemetry.update();
-                         green();
-                     }
-                 }
+                    }
+                }
 
-                 tfod.deactivate();
-             }
-         }
-    }//end of runOp() mode
-             /**
-              * Initialize the Vuforia localization engine.
-              */
+                tfod.deactivate();
+            }
+        }
+    }// end of runOp() mode
 
-         private void initVuforia () {
-             /*
-              * Configure Vuforia by creating a Parameter object, and passing it to the
-              * Vuforia engine.
-              */
-            VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+    /**
+     * Initialize the Vuforia localization engine.
+     */
 
-            parameters.vuforiaLicenseKey = VUFORIA_KEY;
-            parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1"); // Has to be the hardware maped Reapr
-            // webcam
 
-            // Instantiate the Vuforia engine
-            vuforia = ClassFactory.getInstance().createVuforia(parameters);
-         }
 
-    public void encoderDrive(double speed, double leftInches, double rightInches, double leftBackInches, double rightBackInches, double timeoutS) {
+    public void encoderDrive(double speed, double leftInches, double rightInches, double leftBackInches,
+            double rightBackInches, double timeoutS) {
 
         int newLeftTarget;
         int newRightTarget;
@@ -339,17 +325,17 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         // Reverse left motors if you are using NeveRests
         motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        //motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);  // This was connected on the expansion hub, it needs to be reversed
-
+        // motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE); // This was
+        // connected on the expansion hub, it needs to be reversed
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             // Determine new target position, and pass to motor controller
-            newLeftTarget = motorFrontLeft.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = motorFrontRight.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-            newLeftBackTarget = motorBackLeft.getCurrentPosition() + (int)(leftBackInches * COUNTS_PER_INCH);
-            newRightBackTarget = motorBackRight.getCurrentPosition() + (int)(rightBackInches * COUNTS_PER_INCH);
+            newLeftTarget = motorFrontLeft.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
+            newRightTarget = motorFrontRight.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
+            newLeftBackTarget = motorBackLeft.getCurrentPosition() + (int) (leftBackInches * COUNTS_PER_INCH);
+            newRightBackTarget = motorBackRight.getCurrentPosition() + (int) (rightBackInches * COUNTS_PER_INCH);
             motorFrontLeft.setTargetPosition(newLeftTarget);
             motorFrontRight.setTargetPosition(newRightTarget);
             motorBackLeft.setTargetPosition(newLeftBackTarget);
@@ -361,7 +347,6 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
             motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-
             // reset the timeout time and start motion.
             runtime.reset();
             motorFrontLeft.setPower(Math.abs(speed));
@@ -369,19 +354,23 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
             motorBackLeft.setPower(Math.abs(speed));
             motorBackRight.setPower(Math.abs(speed));
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // keep looping while we are still active, and there is time left, and both
+            // motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when
+            // EITHER motor hits
+            // its target position, the motion will stop. This is "safer" in the event that
+            // the robot will
             // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // However, if you require that BOTH motors have finished their moves before the
+            // robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (motorFrontLeft.isBusy() && motorFrontRight.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData("Path2",  "Running at %7d :%7d",
+                telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+                telemetry.addData("Path2", "Running at %7d :%7d",
                         motorFrontLeft.getCurrentPosition(),
                         motorFrontRight.getCurrentPosition());
                 telemetry.update();
@@ -399,12 +388,27 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
             motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            //  sleep(250);   // optional pause after each move
+            // sleep(250); // optional pause after each move
         }
     }
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
+
+    
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the
+         * Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1"); // Has to be the hardware maped Reapr
+        // webcam
+
+        // Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+    }
+
+
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -420,9 +424,6 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
         // Robot Controller's FLASH.
         // tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
         tfod.loadModelFromFile(TFOD_MODEL_FILE, LABELS);
-
-
-
 
     }
 
