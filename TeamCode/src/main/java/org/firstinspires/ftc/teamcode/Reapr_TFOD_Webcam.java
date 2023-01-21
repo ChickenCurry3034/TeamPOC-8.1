@@ -179,6 +179,8 @@ public class Reapr_TFOD_Webcam extends LinearOpMode {
          * Do it here so that the Camera Stream window will have the TensorFlow
          * annotations visible.
          **/
+
+
         if (tfod != null) {
             tfod.activate();
 
