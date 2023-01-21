@@ -104,11 +104,11 @@ public class Reapr_Auto extends LinearOpMode {
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         
         // Forward
-        encoderDrive(DRIVE_SPEED,  -16,  -16, -16, -16, 200.0);  // 200 second timeout, no need for it yet
+        encoderDrive(DRIVE_SPEED,  -22,  -22, -22, -22, 200.0);  // 200 second timeout, no need for it yet
         // Strafing Left (but for right because its backwards)
-        encoderDrive(DRIVE_SPEED,  20,  -20, -20, 20, 200.0);  // 200 second timeout, no need for it yet
+        //encoderDrive(DRIVE_SPEED,  20,  -20, -20, 20, 200.0);  // 200 second timeout, no need for it yet
         // Forward Again
-        encoderDrive(DRIVE_SPEED,  -8,  -8, -8, -8, 200.0);  // 200 second timeout, no need for it yet
+        //encoderDrive(DRIVE_SPEED,  -8,  -8, -8, -8, 200.0);  // 200 second timeout, no need for it yet
 
         // Rotate
         //encoderDrive(TURN_SPEED, 24, -24, 24, -24, 200.0);
