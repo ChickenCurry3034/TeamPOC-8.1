@@ -50,9 +50,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-@Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
+@Autonomous(name = "real working classification")
 
-public class Reapr_Tensorflow_CustomModel extends LinearOpMode {
+public class Reapr_TFOD_Working  extends LinearOpMode {
 
     /*
      * Specify the source for the Tensor Flow Model.
