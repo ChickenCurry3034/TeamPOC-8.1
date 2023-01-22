@@ -29,16 +29,24 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import java.util.List;
+
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.List;
 
 /**
  * This 2022-2023 OpMode illustrates the basics of using the TensorFlow Object Detection API to
@@ -92,6 +100,83 @@ public class Reapr_Tensorflow_CustomModel extends LinearOpMode {
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
+
+    /* Declare OpMode members. */
+    private ElapsedTime runtime = new ElapsedTime();
+
+    static final double COUNTS_PER_MOTOR_REV = 840; // eg: TETRIX Motor Encoder
+    static final double DRIVE_GEAR_REDUCTION = 2.0; // This is < 1.0 if geared UP
+    static final double WHEEL_DIAMETER_INCHES = 4.0; // For figuring circumference
+    static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double DRIVE_SPEED = 0.6;
+    static final double TURN_SPEED = 0.5;
+
+    /*************************/
+    // Hardware Map
+    /************************/
+
+    // On port:
+    double clawPosition = 0.0;
+    final double clawSpeed = 0.05;// change to 100th when button is hold
+    final double clawMinRange = 0.0;
+    final double clawMaxRange = 0.55;
+    boolean isSlowMode = false;
+    double dividePower = 1.0;
+
+    boolean isParallelMode = true;
+
+    double frontLeftPower = 0.0;
+    double backLeftPower = 0.0;
+    double frontRightPower = 0.0;
+    double backRightPower = 0.0;
+
+    DcMotor motorFrontLeft, motorBackLeft, motorFrontRight, motorBackRight, elevatorMotorLeft, elevatorMotorRight;
+    Servo claw;
+
+    public void ReaprHardware() {
+
+        // Meccanum Drivetrain
+        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft"); // Port 0
+        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft"); // Port 1
+        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight"); // Port 2
+        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight"); // Port 3
+
+        // Reverse the right side motors
+        // Reverse left motors if you are using NeveRests
+        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Elevator Motors
+        DcMotor elevatorMotorLeft = hardwareMap.dcMotor.get("elevatorMotorLeft");
+        DcMotor elevatorMotorRight = hardwareMap.dcMotor.get("elevatorMotorRight");
+
+        // Claw Motors (Servo)
+        Servo claw = hardwareMap.servo.get("reaprClaw");// name of server on control
+
+    } // End ; Call this in runOpMode
+
+    public void red() {
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Forward
+        encoderDrive(DRIVE_SPEED, -16, -16, -16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Going left (functions are for going right because robot going BACKWARDS)
+        encoderDrive(DRIVE_SPEED, 16, -16, -16, 16, 200.0);
+        // 200 second timeout, no need for it yet
+    } // Go forward 1.5 block then strafe left 1 block DICE 1/4
 
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
