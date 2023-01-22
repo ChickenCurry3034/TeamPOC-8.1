@@ -60,7 +60,7 @@ import java.util.List;
  */
 @Autonomous(name = "Concept: TensorFlow Object Detection Webcam", group = "Concept")
 
-public class Reapr_Tensorflow_CustomModel extends LinearOpMode {
+public class Reapr_TFOD_Webcam2 extends LinearOpMode {
 
     /*
      * Specify the source for the Tensor Flow Model.
@@ -178,6 +178,40 @@ public class Reapr_Tensorflow_CustomModel extends LinearOpMode {
         // 200 second timeout, no need for it yet
     } // Go forward 1.5 block then strafe left 1 block DICE 1/4
 
+    public void green() {
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Forward
+        encoderDrive(DRIVE_SPEED, -16, -16, -16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+    } // Go forward 1.5 block DICE 2/5
+
+    public void blue() {
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Forward
+        encoderDrive(DRIVE_SPEED, -16, -16, -16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+
+        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Going right (functions are for going left because robot going BACKWARDS)
+        encoderDrive(DRIVE_SPEED, -16, 16, 16, -16, 200.0);
+        // 200 second timeout, no need for it yet
+    } // Go forward 1.5 block then strafe right 1 block DICE 3/6
+
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
      * Detection engine.
@@ -220,6 +254,12 @@ public class Reapr_Tensorflow_CustomModel extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Objects Detected", updatedRecognitions.size());
+                        String SignalDetected = "";
+                        String Red = "0 Red";
+                        String ReaprZero = "0";
+                        String Green = "1 Green";
+                        String Blue = "2 Blue";
+                        sleep(2000); // wait 2 seconds
 
                         // step through the list of recognitions and display image position/size information for each one
                         // Note: "Image number" refers to the randomized image orientation/number
@@ -233,13 +273,31 @@ public class Reapr_Tensorflow_CustomModel extends LinearOpMode {
                             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100 );
                             telemetry.addData("- Position (Row/Col)","%.0f / %.0f", row, col);
                             telemetry.addData("- Size (Width/Height)","%.0f / %.0f", width, height);
+
+                            SignalDetected = recognition.getLabel();
+                            if (SignalDetected == Red || SignalDetected == ReaprZero) {
+                                telemetry.addData("Got Label: ", "%s", Red);
+                                telemetry.update();
+                                red();
+                            }else if (SignalDetected == Blue) {
+                                telemetry.addData("Got Label: ", "%s", Blue);
+                                telemetry.update();
+                                blue();
+                            }else if (SignalDetected == Green) {
+                                telemetry.addData("Got Label: ", "%s", Green);
+                                telemetry.update();
+                                green();
+                            }else{
+                                telemetry.addData(">", "Rip in da chat boiz");
+                            }
+                            }
                         }
                         telemetry.update();
                     }
                 }
             }
         }
-    }
+
 
     /**
      * Initialize the Vuforia localization engine.
@@ -273,5 +331,86 @@ public class Reapr_Tensorflow_CustomModel extends LinearOpMode {
         // Use loadModelFromFile() if you have downloaded a custom team model to the Robot Controller's FLASH.
         //tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
         tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABELS);
+    }
+
+    public void encoderDrive(double speed, double leftInches, double rightInches, double leftBackInches, double rightBackInches, double timeoutS) {
+
+        int newLeftTarget;
+        int newRightTarget;
+        int newLeftBackTarget;
+        int newRightBackTarget;
+
+        // Meccanum Drivetrain
+        DcMotor motorFrontLeft = hardwareMap.dcMotor.get("motorFrontLeft");
+        DcMotor motorBackLeft = hardwareMap.dcMotor.get("motorBackLeft");
+        DcMotor motorFrontRight = hardwareMap.dcMotor.get("motorFrontRight");
+        DcMotor motorBackRight = hardwareMap.dcMotor.get("motorBackRight");
+
+        // Reverse the right side motors
+        // Reverse left motors if you are using NeveRests
+        motorFrontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        motorBackLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //motorBackRight.setDirection(DcMotorSimple.Direction.REVERSE);  // This was connected on the expansion hub, it needs to be reversed
+
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position, and pass to motor controller
+            newLeftTarget = motorFrontLeft.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+            newRightTarget = motorFrontRight.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+            newLeftBackTarget = motorBackLeft.getCurrentPosition() + (int)(leftBackInches * COUNTS_PER_INCH);
+            newRightBackTarget = motorBackRight.getCurrentPosition() + (int)(rightBackInches * COUNTS_PER_INCH);
+            motorFrontLeft.setTargetPosition(newLeftTarget);
+            motorFrontRight.setTargetPosition(newRightTarget);
+            motorBackLeft.setTargetPosition(newLeftBackTarget);
+            motorBackRight.setTargetPosition(newRightBackTarget);
+
+            // Turn On RUN_TO_POSITION
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            motorFrontLeft.setPower(Math.abs(speed));
+            motorFrontRight.setPower(Math.abs(speed));
+            motorBackLeft.setPower(Math.abs(speed));
+            motorBackRight.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS) &&
+                    (motorFrontLeft.isBusy() && motorFrontRight.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        motorFrontLeft.getCurrentPosition(),
+                        motorFrontRight.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            motorFrontLeft.setPower(0);
+            motorFrontRight.setPower(0);
+            motorBackLeft.setPower(0);
+            motorBackRight.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            //  sleep(250);   // optional pause after each move
+        }
     }
 }
